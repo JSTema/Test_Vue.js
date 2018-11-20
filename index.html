@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cars at Vue.js</title>
+</head>
+<link rel="stylesheet" href="css/index.css">
+<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<body>
+	<div class="container pt-5" id="app">
+		<div class="row">
+			<div class="col">
+				<h2>Car selection service</h2>
+			</div>
+		</div>
+		<div class="row md-3">
+			<div class="col-md4 mt-5">
+				<div class="form-group">
+					<label for="search">Find your Car</label>
+					<input 
+						type="text" 
+						class="form-control" 
+						id="search" 
+						name="search" 
+						placeholder="Name, model ...."
+						v-model="search"
+						>
+				</div>
+
+				<hr>
+
+				<ul class="list-group pointer">
+					<li v-for="(car, index) in filteredCars" v-on:click="selectCar(index)"
+						v-bind:class="{'active': selectCarIndex === index}"
+					 class="list-group-item list-group-item-action">{{ car.name }} - {{ car.model }}
+					</li>
+				</ul>
+			</div>
+			<div class="col-md-9">
+				<div class="row ml-5">
+					<div class="col-md-5 mt-5">
+						<h3>{{ activeCar.name }}</h3>
+						
+						<img v-bind:src="activeCar.image" v-bind:alt="activeCar.name"
+						class="image img-rounded"  
+						    > 
+					</div>
+					<div class="col-md-7 mt-5 pl-5 pt-2">
+						<h5>Car details</h5>
+						<hr>
+						<ul class="form-group">
+							<li class="l">Model - <strong>{{ activeCar.model }}</strong></li>
+							<li class="]">Year - <strong>{{ activeCar.year }}</strong></li>
+							<li class="">Owner - <strong>{{ activeCar.owner }}</strong></li>
+						</ul>
+						
+						<div class="phone-block">
+							<transition name="phone">
+								<p class="ml-2" v-if="showPhone"><i class="fa fa-phone"></i>{{ activeCar.phone }}</p>
+							</transition>
+						</div>
+						<button @click="showPhone = !showPhone"
+							class="btn btn-outline-success mr-3">{{ phoneBtnText }}</button>
+						<button
+							@click="modalShow = true"
+							class="btn btn-info">Buy a Car</button>
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<!-- new .row -->
+		<hr>
+		<div class="row" v-if="logs.length !== 0">
+			<div class="col-md-12">
+				<h3 class="text-center">Order List</h3>
+			</div>
+		</div>
+		<div class="row" v-if="logs.length !== 0">
+			<div class="col-md-12">
+				<ul class="list-group">
+					<li
+						v-for="log in logs"
+						v-bind:class="{
+							'list-group-item list-group-item-danger': log.type === 'cnl',
+							'list-group-item list-group-item-success': log.type === 'ok',
+						}"
+					 	class="list-group-item list-group-item-secondary">
+					 {{ log.text }} | Order date - {{ log.date | date }}
+					</li>
+				</ul>
+			</div>
+		</div>
+		<br><br><br>
+
+	<!-- Modal -->
+		<transition name="modal">
+			<div
+				v-if="modalShow" 
+				class="modal fade show" tabindex="-1" role="dialog">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title">Do you want buy {{ activeCar.name }} ?</h5>
+			        <button 
+			        	@click="modalShow = false"
+			        	type="button" 
+			        	class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+			        <ul>
+			        	<li class="list-group-item">Model - <strong>{{ activeCar.model }}</strong> </li>
+			        	<li class="list-group-item">Year - <strong>{{ activeCar.year }}</strong> </li>
+			        	<li class="list-group-item">Owner - <strong>{{ activeCar.owner }}</strong> </li>
+			        </ul>
+			      </div>
+			      <div class="modal-footer">
+			        <button
+			        	@click="newOrder" 
+			        	type="button" 
+			        	class="btn btn-primary">
+			        Buy {{ activeCar.name }}
+			    	</button>
+
+			        <button 
+			        	@click="cancelOrder"
+			        	type="button" class="btn btn-secondary" data-dismiss="modal">
+			        Cancel
+			    	</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+		</transition>
+	<!-- End Modal -->
+
+	<!-- .modal-backfrop animation -->
+		<transition name="fades">
+			<div class="modal-backdrop show fade" v-if="modalShow"></div>
+		</transition>
+	<!-- end .modal-backfrop animation -->
+	</div>
+
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/vue/dist/vue.min.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>
